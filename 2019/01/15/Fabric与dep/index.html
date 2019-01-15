@@ -1,24 +1,7 @@
 <!DOCTYPE html><html lang="zh-cn"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="超级账本系列教程及分析总结"><meta name="keywords" content="Hyperledger, Fabric"><title>Fabric与dep - 超级账本解读</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a href="/about"><span>About</span></a></li><li><a href="https://www.xuanzhangjiong.top"><span>Friends</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://img.mochain.info/header.jpg"><div class="post-title"><h1 class="title">Fabric与dep</h1><ul class="meta"><li><i class="icon icon-author"></i>TopJohn</li><li><i class="icon icon-clock"></i>3 Minutes</li><li><i class="icon icon-calendar"></i>January 15, 2019</li></ul></div></div><div class="article-content" style="max-width:800px"><blockquote>
 <p>作者: TopJohn<br>原文连接：<a href="https://www.xuanzhangjiong.top/2019/01/15/Fabric%E4%B8%8Edep/" target="_blank" rel="noopener">https://www.xuanzhangjiong.top/2019/01/15/Fabric%E4%B8%8Edep/</a></p>
 </blockquote>
-<!-- TOC -->
-<ul>
-<li><a href="#fabric与dep">Fabric与dep</a><ul>
-<li><a href="#个人感受">个人感受</a></li>
-<li><a href="#fabric包管理工具的变更">Fabric包管理工具的变更</a></li>
-<li><a href="#dep-vs-vgo">Dep vs Vgo</a></li>
-<li><a href="#说说chaincode中的包管理">说说Chaincode中的包管理</a><ul>
-<li><a href="#场景">场景</a></li>
-<li><a href="#当前的实现">当前的实现</a></li>
-<li><a href="#建议的实现">建议的实现</a></li>
-</ul>
-</li>
-<li><a href="#总结">总结</a></li>
-</ul>
-</li>
-</ul>
-<!-- /TOC -->
-<h1 id="Fabric与dep"><a href="#Fabric与dep" class="headerlink" title="Fabric与dep"></a>Fabric与dep</h1><h2 id="个人感受"><a href="#个人感受" class="headerlink" title="个人感受"></a>个人感受</h2><p>接触Golang有2年时间了，从最初学习的时候简单地采用GOPATH开始，作为一个写过几年代码的人就有点奇怪，从Java的Maven到Node.js的npm，Golang的这种代码管理方式有点思维的跳跃。但是也勉强接受了，个人开发来说没什么大问题，所有的第三方包都由自己维护，但是采用Git协作的话就有点不知所云了，每个人都要维护统一的第三方包。后来就采用<a href="https://github.com/kardianos/govendor" target="_blank" rel="noopener">Govendor</a>来统一管理维护项目的第三方包。上述是个人使用经验，可能是我入<code>Golang</code>这行较晚，很多依赖管理工具没赶上潮流吧，自带学Go之后，Govendor便是主流工具。</p>
+<h1 id="Fabric与depv"><a href="#Fabric与depv" class="headerlink" title="Fabric与depv"></a>Fabric与depv</h1><h2 id="个人感受"><a href="#个人感受" class="headerlink" title="个人感受"></a>个人感受</h2><p>接触Golang有2年时间了，从最初学习的时候简单地采用GOPATH开始，作为一个写过几年代码的人就有点奇怪，从Java的Maven到Node.js的npm，Golang的这种代码管理方式有点思维的跳跃。但是也勉强接受了，个人开发来说没什么大问题，所有的第三方包都由自己维护，但是采用Git协作的话就有点不知所云了，每个人都要维护统一的第三方包。后来就采用<a href="https://github.com/kardianos/govendor" target="_blank" rel="noopener">Govendor</a>来统一管理维护项目的第三方包。上述是个人使用经验，可能是我入<code>Golang</code>这行较晚，很多依赖管理工具没赶上潮流吧，自带学Go之后，Govendor便是主流工具。</p>
 <h2 id="Fabric包管理工具的变更"><a href="#Fabric包管理工具的变更" class="headerlink" title="Fabric包管理工具的变更"></a>Fabric包管理工具的变更</h2><p>Govendor也是之前很长一段时间Hyperledger Fabric所采用的依赖管理工具，但是在17年11月22日在<a href="https://jira.hyperledger.org/browse/FAB-7083" target="_blank" rel="noopener">Jira</a>上便开始讨论是否采用dep来进行包依赖管理，毕竟在混乱的年代，第三方的包管理工具不是一个长久之计，dep当时已经成为Go的官方包管理工具的一个候选者，在1.2版本中，Fabric开始采用dep作为依赖管理工具。</p>
 <p>但是在与此同时出现了vgo,然后随着go v1.11的出现，vgo又更名为go modules，真的是百家争鸣那。现在Fabric主项目采用的是dep，而fabric ca项目不知道是因为进度缓慢还是考虑到go modules会发布，还在采用govendor进行包管理。</p>
 <p>在<a href="https://jira.hyperledger.org/browse/FAB-10562" target="_blank" rel="noopener">Jira</a>上，18年6月6日的时候有一个讨论，说的是vgo的提案已经被go官方接受了，Fabric团队需要考虑vgo在未来对Fabric的影响。<strong>当然下述的文字表述仅仅是对历史的一个回顾，现在vgo这个词也已经不存在了。</strong></p>
