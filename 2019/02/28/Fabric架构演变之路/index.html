@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="超级账本系列教程及分析总结"><meta name="keywords" content="Hyperledger, Fabric"><title>Fabric架构演变之路 - 超级账本解读</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a href="/about"><span>About</span></a></li><li><a href="https://www.xuanzhangjiong.top"><span>Friends</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://img.mochain.info/header.jpg"><div class="post-title"><h1 class="title">Fabric架构演变之路</h1><ul class="meta"><li><i class="icon icon-author"></i>TopJohn</li><li><i class="icon icon-clock"></i>9 Minutes</li><li><i class="icon icon-calendar"></i>February 28, 2019</li></ul></div></div><div class="article-content" style="max-width:800px"><blockquote>
+<p>作者: TopJohn<br>原文连接：<a href="https://www.xuanzhangjiong.top/2019/01/24/Fabric%E6%9E%B6%E6%9E%84%E6%BC%94%E5%8F%98%E4%B9%8B%E8%B7%AF/" target="_blank" rel="noopener">https://www.xuanzhangjiong.top/2019/01/24/Fabric%E6%9E%B6%E6%9E%84%E6%BC%94%E5%8F%98%E4%B9%8B%E8%B7%AF/</a></p>
+</blockquote>
+<h1 id="Fabric架构演变之路"><a href="#Fabric架构演变之路" class="headerlink" title="Fabric架构演变之路"></a>Fabric架构演变之路</h1><p>Hyperledger Fabric是目前主流的开源联盟链产品之一，自2016年5月12日开辟代码仓库之日起，已有快3年的时间了，产品趋于稳定，功能也越来越完善，正在适配不同业务场景下的需求。<br>纵观Fabric的发布历程，在v0.6.1-preview版本至v1.0.0的版本迁移过程中架构发生了明显的变化，在v1.0.0之后每个小版本中加入了一些新的feature，来支持不同的业务场景以及完善相应的功能。接下来从个人角度来谈谈Fabric架构变迁过程中的一点思考。</p>
+<h2 id="Fabric-v0-6"><a href="#Fabric-v0-6" class="headerlink" title="Fabric v0.6"></a>Fabric v0.6</h2><p>v0.6版本的技术架构在整个发展过程中停留的时间较短，相对目前v1.x版本来说，不太稳定，适合做poc阶段的测试。</p>
+<p>下图是Fabric v0.6版本的架构图<br><img src="http://img.mochain.info/topjohn/blog/post/v0.6-artitecture.png" alt="v0.6-artitecture"><br>在v0.6版本中，主要分为Membership、Consensus、Chaincode、Ledger、P2P、Event Stream等核心模块。</p>
+<ul>
+<li>Membership：负责签发相应的E-cert、T-cert、TLS-cert等证书。</li>
+<li>Consensus：负责整个区块链的共识，统一交易顺序，保证区块链的一致性。</li>
+<li>Chaincode：即链码（Fabric中的智能合约），用于执行区块链网络中的交易。</li>
+<li>Ledger：用于存储Transaction log以及交易中的Key-Value。</li>
+<li>P2P：基于Google的Grpc框架的底层网络通信层。</li>
+<li>Event Stream：事件订阅发布组建，用于接收交易及区块事件。</li>
+</ul>
+<p>在Fabric v0.6中采用的共识算法是PBFT算法（Practical Byzantine Fault Tolerance）,可以在信任程度较低的场景下避免拜占庭问题。但是由于算法本身特性限制，n&gt;=3f+1，才能容忍一个拜占庭节点，因此在v0.6版本下，vp节点数量至少是4个。在v0.6版本中，节点角色分为VP(Validating Peer)、NVP(None validating Peer)以及用于签发证书的Membership节点3种。当然Fabric从第一个版本v0.6.0-preview开始就采用基于docker的运行时环境，为部署减少了许多麻烦，屏蔽了操作系统的差异。当然最主要的一点也许是由于Chaincode的设计机制导致的，整套生产环境的链码的部署和运行都是基于docker的，也许是出于docker稳定以及相对安全的运行环境的考量。Fabric的智能合约设计理论上可以支持认可开发语言，只要实现了相应的接口。因为它是基于Peer节点和链码容器的一个双向通信完成相应的交互的。</p>
+<p>下图是一张Fabric v0.6版本的网络拓扑图<br><img src="http://img.mochain.info/topjohn/blog/post/topology.png" alt="topology"></p>
+<p>在这张图中包含了VP和NVP 2种角色，NVP在这里会分担VP的部分工作，接收来自客户端发过来的交易进行校验同时将交易请求转发至共识节点VP，由VP节点进行真正的共识，将交易写入区块。在这里NVP可以分担共识节点VP的处理交易的压力，可以提升共识的性能。</p>
+<p>下图为Fabric v0.6的交易流程图<br><img src="http://img.mochain.info/topjohn/blog/post/flow.png" alt="flow"></p>
+<p>应用程序需要先向Membership申请E-cert，通过E-cert去申请T-cert，由T-cert对应的私钥进行签名客户端交易发送至VP节点进行三阶段共识，完成之后各个节点会通过Chaincode按顺序执行区块中的交易，并更新账本。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>Fabric v0.6版本可能由于1.0架构重构的原因，没有继续维护推进，但是相对于1.0版本的架构来说，这种设计来说，区块链角色相对对称，相对于1.0-1.4版本来说，不存在中心化的Kafka的存在，在实际场景中拥有更合理对等的节点设计。</p>
+<h2 id="Fabric-v1-x"><a href="#Fabric-v1-x" class="headerlink" title="Fabric v1.x"></a>Fabric v1.x</h2><p>Fabric在1.0版本的时候，架构进行了重构，相比于v0.6版本来说，有了颠覆性的变革，功能模块进行了结偶，具有了更好的可伸缩性、性能，进行了channel级别的安全隔离，共识算法可插拔，具备了更高的可操作性，具备了更丰富的功能，给开发者更好的体验，v0.6版本中的Membership也升级为了一个独立的Fabric CA项目。</p>
+<p><img src="http://img.mochain.info/topjohn/blog/post/v1.0-feature.png" alt="v1.0-feature"></p>
+<p>Fabric v1.x版本中，对节点进行了功能的拆分，明确了各个节点的指责，将背书的信任假设和排序的信任假设进行了拆分。变动最大的地方在于，在共识流程中将交易的执行进行了提前，由Endorser节点进行模拟执行，并进行背书，排序节点Orderer会对所有的交易进行统一的打包排序，将其分发给Committer节点。这种设计的优势在于可以将前后无关联的交易以及不同Channel中的交易进行并行执行，提高交易的执行速度。在v0.6版本中是无法做到并行执行的，0.6中是统一进行排序打包，然后按序执行交易，即使交易前后是无关的。下图也很好地体现了Fabric v1.x中的一个网络拓扑。<br><img src="http://img.mochain.info/topjohn/blog/post/1.x-topology.png" alt="1.x-topology"></p>
+<p>下图是Fabric v1.x版本的架构图<br><img src="http://img.mochain.info/topjohn/blog/post/v1.x-flow.png" alt="1.x-flow"><br>在v1.x版本中，主要分为Fabric CA、Endorser、Committer、Orderer、Application等角色。</p>
+<ul>
+<li>Fabric CA：负责维护整个Fabric网络中的证书，主要包括签发、吊销、续签证书等操作。</li>
+<li>Endorser：负责对客户端发过来的交易提案进行背书。</li>
+<li>Comitter：负责对区块进行有效性校验并将区块写入账本。</li>
+<li>Orderer：负责对所有的交易进行全局唯一的排序打包工作。</li>
+<li>Application：用于发送交易提案，收集响应，封装交易发送至Orderer排序服务节点。</li>
+</ul>
+<p>在1.0及以后的版本中，客户端应用会先向Fabric CA申请用户所需要的Fabric中的准入证书，用于签名提案以及交易，然后由客户端（Application）端生成一个提案（Proposal）(一般应用程序会借助于目前Fabric提供的一系列SDK生成Proposal)发送至背书节点进行模拟执行并进行背书，背书节点Endorser会进行相应的校验，然后将提案交由对应的链码Chaincode进行模拟执行，之后背书节点Endorser会对执行结果进行背书,将背书的Response返回至客户端程序Application，随之，客户端程收集到符合背书策略的提案响应（Proposal Response）之后，将其封装成一个交易Transaction，调用排序节点Orderer的Broadcast接口，进行发送交易至Orderer，在v1.0-v1.4版本中，生产环境只有基于分布式消息队列Kafka的排序打包方式，Orderer作为生产者将交易统一发送至每个通道Channel对应的Topic的Partition当中进行全局统一地排序，同时每个排序节点基于同样的切块规则从Kafka中将区块切下推送Deliver至与之连接的Leader Peer（在网络环境良好的情况下，每个组织只有一个leader），Leader Peer收到区块后，会将区块通过Gossip协议广播至组织内其余节点。每个Committer在收到区块之后会对区块进行校验，包括签名、背书策略以及读写集的校验，在校验无误的情况下进行commit，提交到账本，同时更新世界状态，同时订阅了相应事件的应用程序会收到来自Event Hub的消息通知。</p>
+<p>下图是一个Fabric v1.x的简化版本的交易流程。<br><img src="http://img.mochain.info/topjohn/blog/post/transaction-flow.png" alt="transaction-flow"></p>
+<p>此外，在v1.0之后，Fabric强调了组织的概念，在Peer节点的层级上，每个组织需要配置一个或者多个Anchor Peer节点，来代表组织在整个区块链网络启始之处与别的组织交换节点信息，使得每个节点都能够掌握整个网络的节点信息。</p>
+<p>同时，在v1.0之后，Fabric加入了多通道技术（Muti-channel），使得一个Fabric网络中能够运行多个账本，每个通道间的逻辑相互隔离不受影响，如下图所示，每种颜色的线条代表一个逻辑上的通道，每个Peer节点可以加入不同的通道，每个通道都拥有独立的账本、世界状态、链码以及Kafka中的Topic，通道间消息是隔离的，互不影响的。<br><img src="http://img.mochain.info/topjohn/blog/post/anchor-channel.png" alt="anchor-channel"></p>
+<p>在Fabricv1.x中，多通道技术是用于在业务逻辑层面做的一个全局的，用于隔离不同业务的通道，使得不同业务的交易存储在不同的通道对应的节点中，通道技术的实现主要在Orderer中实现，Orderer对来自不同通道的交易做区分，同时在Peer节点中会采用MSP对不同通道的消息做校验，用于判断消息是否属于某个通道，通过Orderer以及Peer相结合，形成一个逻辑上的通道技术。<br><img src="http://img.mochain.info/topjohn/blog/post/muti-channel.png" alt="muti-channel"></p>
+<p>在背书和提交校验阶段，Fabric提出了2个系统链码，ESCC和VSCC：</p>
+<ul>
+<li>ESCC：用于为链码执行结果进行背书。</li>
+<li>VSCC：用于对接收到的区块中的交易进行校验。</li>
+</ul>
+<p><img src="http://img.mochain.info/topjohn/blog/post/escc-vscc.png" alt="escc-vscc"></p>
+<p>在存储方面，v1.0也进行了优化，存储的设计分为2个部分，一个部分是区块的存储，采用的是File System即传统的文件系统，这里设计成采用文件存储的原因在于：区块链中的区块是不断向后追加的，即不断append的，不存在随机写的情况，如果采用Key-Value数据库可能会存在数据压缩或者相关的索引算法的消耗，在这种场景下，File System会优于K-V数据库，因此不管是Orderer还是Peer，对于区块存储部分，均采用File System进行存储，对于Block的索引，则采用Level DB进行存储维护，会根据BlockHash、BlockNumber、TxId等作为Key进行存储，而Value则是区块或者交易所在的Segment号+offset(偏移)，用于快速根据Key来定位所需要的区块或者交易。</p>
+<p>此外，对于世界状态的存储，这里指State DB，在v1.0以后可以用Level DB或者Couch DB进行存储，根据存储的数据的复杂程度，以及链码的业务逻辑可以选择不同的数据库，比如需要针对Json数据进行索引则可以采用Couch DB来进行存储，如果是普通的Key-Value则可以采用Level DB进行存储。</p>
+<p>下图是Fabric v1.0以后的存储的设计图。<br><img src="http://img.mochain.info/topjohn/blog/post/ledger.png" alt="ledger"></p>
+<p>Fabric v1.0之后的CA，从Fabric v0.6到v1.0，Fabric CA是从Membership这个模块所衍生出来的，承担整个Fabric网络数字证书的签发、续签以及吊销等工作，作为一个独立的服务存在。同时Fabric CA支持多级CA，以保证根CA的绝对安全，同时存储部分也是可插拔的，可以选择MySQL、LDAP、Postgres等，可以采用HA Proxy做负载均衡。</p>
+<p><img src="http://img.mochain.info/topjohn/blog/post/ca.png" alt="ca"></p>
+<h3 id="Fabric-v1-1"><a href="#Fabric-v1-1" class="headerlink" title="Fabric v1.1"></a>Fabric v1.1</h3><p>Fabric v1.1版本主要的新特性包括：</p>
+<ul>
+<li>Fabric CA的CRL</li>
+<li>区块以及交易的事件推送</li>
+<li>增加了所有组建间的双向TLS通信</li>
+<li>Node.js Chaincode链码的支持</li>
+<li>Chaincode API新增了creator identity</li>
+<li>性能相对v1.0有了明显的提升</li>
+</ul>
+<h3 id="Fabric-v1-2"><a href="#Fabric-v1-2" class="headerlink" title="Fabric v1.2"></a>Fabric v1.2</h3><p>Fabric v1.2开始有了比较大的feature开始出现：</p>
+<ul>
+<li>Private Data Collections：这个特性不得不说在隐私保护上解决了不少项目的痛点，也减少了许多项目为了隐私保护在业务层做的复杂设计。</li>
+<li>Service Discovery：服务发现这个特性，使得客户端拥有了更多的灵活性和可操作性，可以动态感知整个Fabric网络的变化。</li>
+<li>Pluggable endorsement and validation：可插拔的背书及校验机制，采用了Go Plugin机制来实现，避免了之前需要重新编译源代码的操作，提升了灵活性。</li>
+</ul>
+<h3 id="Fabric-v1-3"><a href="#Fabric-v1-3" class="headerlink" title="Fabric v1.3"></a>Fabric v1.3</h3><p>Fabric v1.3中，同样增加了十分有用的feature：</p>
+<ul>
+<li>基于Identity Mixer的MSP Implementation：基于零知识证明实现的身份的匿名和不可链接，这个feature替代了v0.6版本中的T-cert。</li>
+<li>key-level endorsement policies：更细粒度的背书策略，细化到具体的key-value，更加灵活，不仅限于一个链码程序作背书。</li>
+<li>新增Java Chaincode：至此，v1.3之后支持了Go、Node.js、Java 三种Chaincode，为开发者提供了更多的选择。</li>
+<li>Peer channel-based event services：Channel级别的事件订阅机制，早在v1.1版本中已经亮相了，在v1.3版本中正式发布，至此，旧的Event Hub正式宣告弃用。</li>
+</ul>
+<h3 id="Fabric-v1-4"><a href="#Fabric-v1-4" class="headerlink" title="Fabric v1.4"></a>Fabric v1.4</h3><p>Fabric v1.4是一个里程碑式的版本，是首个LTS的版本（Long Term Support的版本）：</p>
+<ul>
+<li>可操作性和可维护性的提升：<ul>
+<li>开放日志级别设置的接口</li>
+<li>开放节点健康状态的检查接口</li>
+<li>开放节点数据指标的收集接口</li>
+</ul>
+</li>
+<li>改进了Node SDK的编程模型，简化开发者的代码复杂度，使得SDK更加易用</li>
+<li>Private Data的增强：<ul>
+<li>对于后续添加的允许访问节点能够获取之前的隐私数据</li>
+<li>添加客户端层面的隐私数据的权限控制，不需要添加链码逻辑</li>
+</ul>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于Fabric的架构变迁，从v0.6版本到v1.0版本有了相对较大的变动，而v1.0—&gt;v1.4之间，也收集了来自业界的不少需求，进行了完善，增加了许多实用的功能，目前v1.4版本后续的小迭代会对目前存在的bug进行fix，而新的大feature则会在未来的v2.0版本中发布，敬请期待吧！</p>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fabric/">Fabric</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fabric技术内幕/">Fabric技术内幕</a><span class="tag-list-count">1</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Fabric/">Fabric</a><span class="category-list-count">2</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Fabric/Fabric技术内幕/">Fabric技术内幕</a><span class="category-list-count">1</span></li></ul></li></ul></div></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2020/01/08/超级账本解读大纲/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2019/01/15/Fabric与dep/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/TopJohn" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="http://weibo.com/xuanzhangjiong" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.zhihu.com/people/topjohn" title="zhihu" target="_blank"><i class="icon icon-zhihu"></i></a></li><li><a href="mailto:xzj19922010@gmail.com" target="_blank"><i class="icon icon-email"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2019 超级账本解读</p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>
