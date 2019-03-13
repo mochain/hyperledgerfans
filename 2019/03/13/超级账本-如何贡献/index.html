@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="超级账本系列教程及分析总结"><meta name="keywords" content="Hyperledger, Fabric"><title>超级账本-如何贡献 - 超级账本解读</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a href="/about"><span>About</span></a></li><li><a href="https://www.xuanzhangjiong.top"><span>Friends</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://img.mochain.info/header.jpg"><div class="post-title"><h1 class="title">超级账本-如何贡献</h1><ul class="meta"><li><i class="icon icon-author"></i>TopJohn</li><li><i class="icon icon-clock"></i>14 Minutes</li><li><i class="icon icon-calendar"></i>March 13, 2019</li></ul></div></div><div class="article-content" style="max-width:800px"><blockquote>
+<p>原文地址：<a href="https://www.xuanzhangjiong.top/2019/03/12/%E8%B6%85%E7%BA%A7%E8%B4%A6%E6%9C%AC-%E5%A6%82%E4%BD%95%E8%B4%A1%E7%8C%AE/" target="_blank" rel="noopener">https://www.xuanzhangjiong.top/2019/03/12/%E8%B6%85%E7%BA%A7%E8%B4%A6%E6%9C%AC-%E5%A6%82%E4%BD%95%E8%B4%A1%E7%8C%AE/</a></p>
+<p>作者：<a href="https://www.xuanzhangjiong.top/about/" target="_blank" rel="noopener">TopJohn</a></p>
+</blockquote>
+<h1 id="超级账本-如何贡献"><a href="#超级账本-如何贡献" class="headerlink" title="超级账本-如何贡献"></a>超级账本-如何贡献</h1><p>个人感受，文档看的再多，学习的速度也不如参与到项目中去，深入了解实现原理和设计的初衷。文档只能让我们对Fabric的整体运行机制有一个宏观的认识，要进一步深入，就需要从源代码入手，而贡献代码则是一个自然而然的事情，学习的过程中总会发现一些问题和值得优化的地方。所以前阵子顺手翻译了一下Fabric如何贡献相关的官方文档。这篇文章讲解，其中的整体流程和所需用到的工具。如需详细学习，请参考官方文档：</p>
+<ul>
+<li><a href="https://hyperledger-fabric.readthedocs.io/en/latest/CONTRIBUTING.html" target="_blank" rel="noopener">官方文档原版</a></li>
+<li><a href="https://fabric-docs-cn-topjohn.readthedocs.io/zh_CN/latest/CONTRIBUTING.html" target="_blank" rel="noopener">官方文档中文版</a></li>
+</ul>
+<p>下面是我个人的官方文档中文版本翻译的GitHub仓库，欢迎大家star：</p>
+<p><strong><a href="https://github.com/TopJohn/fabric-docs-cn" target="_blank" rel="noopener">https://github.com/TopJohn/fabric-docs-cn</a></strong></p>
+<p>同时我会将已经完成的部分同步发Pull Request到hyperledger-labs组织下的fabric-docs-cn仓库中：</p>
+<p><strong><a href="https://github.com/hyperledger-labs/fabric-docs-cn" target="_blank" rel="noopener">https://github.com/hyperledger-labs/fabric-docs-cn</a></strong></p>
+<p>有兴趣的朋友也可以一起参与超级账本国际化相关的工作中来。</p>
+<h2 id="贡献的方法"><a href="#贡献的方法" class="headerlink" title="贡献的方法"></a>贡献的方法</h2><p>不管作为普通用户还是开发者，这里都有很多为Hyperledger Fabric做贡献的方法。</p>
+<p><strong>作为普通用户：</strong></p>
+<ul>
+<li><a href="#提出功能-改进建议">提出功能-改进建议</a></li>
+<li><a href="#反馈错误">反馈错误</a></li>
+<li>帮助测试在<a href="https://jira.hyperledger.org/secure/Dashboard.jspa?selectPageId=10104" target="_blank" rel="noopener">release roadmap</a>上即将发布的史诗。将问题通过Jira或者<a href="https://chat.hyperledger.org" target="_blank" rel="noopener">RocketChat</a>反馈给开发者。</li>
+</ul>
+<p><strong>作为开发者：</strong></p>
+<ul>
+<li><p>如果你的时间不多，可以考虑选择一些<a href="https://jira.hyperledger.org/issues/?filter=10147" target="_blank" rel="noopener">想要帮助的</a>任务，参考<a href="#修复问题和认领正在进行的任务">修复问题和认领正在进行的任务</a> 。</p>
+</li>
+<li><p>如果你可以全职开发，可以提一个新的特性（参考<a href="#提出功能-改进建议">提出功能-改进建议</a>）带领一个团队来实现它，或者加入在已经存在的史诗中的团队。如果你在<a href="https://jira.hyperledger.org/secure/Dashboard.jspa?selectPageId=10104" target="_blank" rel="noopener">release roadmap</a>发现了一个你感兴趣的史诗，请及时通过Jira或者<a href="https://chat.hyperledger.org" target="_blank" rel="noopener">RocketChat</a>联系分配到任务的人，和他们一起完成这个史诗。</p>
+</li>
+</ul>
+<h2 id="获取一个Linux-Foundation的账号"><a href="#获取一个Linux-Foundation的账号" class="headerlink" title="获取一个Linux Foundation的账号"></a>获取一个Linux Foundation的账号</h2><p>为了参与到Hyperledger Fabric项目的开发中来，你首先需要一个Linux Foundation账号。你需要使用你的LF ID来访问所有的Hyperledger社区的工具，包括 <a href="https://gerrit.hyperledger.org" target="_blank" rel="noopener">Gerrit</a>，<a href="https://jira.hyperledger.org" target="_blank" rel="noopener">Jira</a>，<a href="https://chat.hyperledger.org/" target="_blank" rel="noopener">RocketChat</a>，和<a href="https://wiki.hyperledger.org/start" target="_blank" rel="noopener">Wiki</a> (仅用于编辑)。</p>
+<h2 id="项目管理"><a href="#项目管理" class="headerlink" title="项目管理"></a>项目管理</h2><p>正如我们的<a href="https://www.hyperledger.org/about/charter" target="_blank" rel="noopener">章程</a>中描述的那样，Hyperledger Fabric是在一个开放治理的模型下管理的。项目和子项目由一系列维护者主导。一个新的子项目可以指定一些初始的维护者，当项目第一次被批准的时候，由顶级项目的现有维护者所批准。</p>
+<h2 id="维护者"><a href="#维护者" class="headerlink" title="维护者"></a>维护者</h2><p>Fabric项目由项目的顶级维护者领导。维护者负责评审和合并提交评审的所有布丁，并在超级账本技术委员会的方针下指导项目的技术发展路线。</p>
+<h2 id="成为一名维护者"><a href="#成为一名维护者" class="headerlink" title="成为一名维护者"></a>成为一名维护者</h2><p>项目的维护者会时不时地考虑添加或者删除维护者。现有的维护者可以提交变更到<code>MAINTAINERS.rst</code>文件中。一个提名的维护者可以由大多数现有的维护者批准通过成为正式的维护者。一旦批准通过，变更就会被合并同时个体就会在维护者的组中被添加（或者移除）。维护者可能会因为明确的辞职、长时间的不活动（超过3个月或者更长的时间），或者因为违反相关的行为准则或则持续表现出糟糕的判断而被移出维护者的队列。</p>
+<h2 id="发布节奏"><a href="#发布节奏" class="headerlink" title="发布节奏"></a>发布节奏</h2><p>Fabric的维护者已经确定了每个季度大致的发布节奏（请参考 <a href="https://github.com/hyperledger/fabric#releases" target="_blank" rel="noopener">releases</a>。我们也在积极考虑采用LTS（long term support）的发布过程，虽然这些细节需要由具体的维护者决定。相关细节请参考在Chat的<code>#fabric-maintainers</code>中的讨论。</p>
+<h2 id="提出功能-改进建议"><a href="#提出功能-改进建议" class="headerlink" title="提出功能-改进建议"></a>提出功能-改进建议</h2><p>首先，请回顾一下<a href="https://jira.hyperledger.org/issues/?filter=12524" target="_blank" rel="noopener">JIRA</a>确保之前没有已经开启或者关闭的相同功能的提案。如果没有，为了开启一个提案，我们建议创建一个Jira的Epic或者Story，选择一个最合适的环境，并附上一个链接或者内嵌一个提案的页面，说明这个特性是做什么的，如果可能的话，描述一下它应该如何实现。这有助于说明为什么应该添加这个特性，例如确定需要该特性的特定用例，以及如果实现该特性的好处。一旦Jira的issue被创建了，并且描述中添加了附加的或者内嵌的页面或者一个公开的可访问的文档链接，就可以向 <a href="mailto:fabric@lists.hyperledger.org" target="_blank" rel="noopener">fabric@lists.hyperledger.org</a> 邮件列表发送介绍性的电子邮件，邮件中附上Jira issue的链接，并等待反馈。</p>
+<p>对建议性的特性的讨论应该在JIRA issue本身中进行，这样我们就可以在社区中有一个统一的方式来找到这个设计的讨论。</p>
+<p>获得3个或者更多的维护者对新特性的支持将会大大提高该特性相关的变更申请被合并到下一次发布的可能性。</p>
+<h2 id="维护者会议"><a href="#维护者会议" class="headerlink" title="维护者会议"></a>维护者会议</h2><p>维护者会在每隔一周的周三的东部时间9点举行双周会议在 <a href="https://zoom.us/my/hyperledger.community" target="_blank" rel="noopener">Zoom</a>上。请参考<a href="https://wiki.hyperledger.org/community/calendar-public-meetings" target="_blank" rel="noopener">community calendar</a>获取具体信息。</p>
+<p>维护者的会议的目的是为了计划以及审查发布的进度，同时讨论项目或者子项目的技术以及操作方向上的事宜。</p>
+<p>如上所述的新特性/增强建议应该在维护者的会议上进行探讨，反馈和接受。</p>
+<h2 id="发布路线"><a href="#发布路线" class="headerlink" title="发布路线"></a>发布路线</h2><p>Fabric相关的发布路线的史诗维护在<a href="https://jira.hyperledger.org/secure/Dashboard.jspa?selectPageId=10104" target="_blank" rel="noopener">JIRA</a>上。</p>
+<h2 id="交流"><a href="#交流" class="headerlink" title="交流"></a>交流</h2><p>我们使用 <a href="https://chat.hyperledger.org/" target="_blank" rel="noopener">RocketChat</a>来进行交流或者实用 Google Hangouts™ 进行屏幕分享。我们的开发计划和优先级在<a href="https://jira.hyperledger.org" target="_blank" rel="noopener">JIRA</a>上进行发布，同时我们也花大量的时间在<a href="https://lists.hyperledger.org/mailman/listinfo/hyperledger-fabric" target="_blank" rel="noopener">mailing list</a>上进行讨论才做决定。</p>
+<h2 id="贡献指南"><a href="#贡献指南" class="headerlink" title="贡献指南"></a>贡献指南</h2><h3 id="安装前置条件"><a href="#安装前置条件" class="headerlink" title="安装前置条件"></a>安装前置条件</h3><p>在我们开始之前，如果你还没有这样做那你可能需要检查一下您是否已经在将要开发区块链应用或者运行Hyperledger Fabric的平台上是否安装了运行所需的环境。</p>
+<h3 id="获得帮助"><a href="#获得帮助" class="headerlink" title="获得帮助"></a>获得帮助</h3><p>如果你试图寻找一种途径来寻找专家援助或者解决一些问题，我们的 <a href="https://www.hyperledger.org/community" target="_blank" rel="noopener">社区</a>总是会为您提供帮助的。我们在<a href="https://chat.hyperledger.org/channel/fabric/" target="_blank" rel="noopener">Chat</a>，IRC(#hyperledger on freenode.net) 以及 <a href="https://lists.hyperledger.org/" target="_blank" rel="noopener">mailing lists</a>中都可以找到。我们大多数人都很乐意提供帮助。唯一愚蠢的是你不去问。问题实际上是帮助改进项目的很好的方法，因为它们使我们的文档更加清晰。</p>
+<h3 id="反馈错误"><a href="#反馈错误" class="headerlink" title="反馈错误"></a>反馈错误</h3><p>如果你是一个用户，并且发现了错误，请使用<a href="https://jira.hyperledger.org/secure/Dashboard.jspa?selectPageId=10104" target="_blank" rel="noopener">JIRA</a>来提交问题。在您创建新的JIRA问题之前，请尝试搜索是否有人已经提过类似的问题，确保之前没有人报告过。如果之前有人报告过，那么你可以添加评论表明你也期望这个问题被修复。</p>
+<blockquote>
+<p>如果缺陷与安全相关，请遵循Hyperledger<a href="https://wiki.hyperledger.org/security" target="_blank" rel="noopener">安全问题处理流程</a></p>
+</blockquote>
+<p>如果以前没有报告过，请创建一个新的JIRA。请尝试为其他人提供足够多的信息以重现该问题。该项目的维护人员应该在24小时之内回复您的问题。如果没有，请通过评论提出问题，并要求对其进行评审。您还可以在<a href="https://chat.hyperledger.org" target="_blank" rel="noopener">Hyperledger Chat</a>中将问题发布到相关的相关的Hyperledger Fabric的频道中。比如，可以将一个文档问题在<br><code>#fabric-documentation</code>中进行广播，一个数据存储问题可以在<code>#fabric-ledger</code>中广播，以此类推。</p>
+<h3 id="提交你的修复"><a href="#提交你的修复" class="headerlink" title="提交你的修复"></a>提交你的修复</h3><p>如果你在JIRA上提交了你刚刚发现的问题，并希望修复它，我们很乐意并且非常欢迎。请将JIRA问题分配给自己，然后您可以提交变更请求（CR）。</p>
+<blockquote>
+<p>如果你在提交第一个CR的时候需要帮助，我们已经为你创建了一个简短的教程。</p>
+</blockquote>
+<h3 id="修复问题和认领正在进行的任务"><a href="#修复问题和认领正在进行的任务" class="headerlink" title="修复问题和认领正在进行的任务"></a>修复问题和认领正在进行的任务</h3><p>查看<a href="https://jira.hyperledger.org/issues/?filter=10580" target="_blank" rel="noopener">问题列表</a>找到你感兴趣的内容。您也可以从<a href="https://jira.hyperledger.org/issues/?filter=10147" target="_blank" rel="noopener">求助</a> 列表中寻找。明智的做法是从相对直接和可实现的任务开始，并且这个任务是未被分配的。如果没有分配给别人，，请将问题分配给自己。如果你无法在合理的时间内完成，请加以考虑并且取消认领，如果你需要更多的时间，请添加评论加以说明，你正在积极处理问题。</p>
+<h3 id="审核提交的变更请求-CRs"><a href="#审核提交的变更请求-CRs" class="headerlink" title="审核提交的变更请求(CRs)"></a>审核提交的变更请求(CRs)</h3><p>另一种贡献和了解Hyperledger Fabric的方法是帮助维护人员审查开放的CR。实际上维护者是相对困难的，他们需要审查所有正在提交的CR并且评估他们是否应该被合并。您可以查看代码或则文档修改，测试更改的内容，并告知提交者和维护者您的想法。完成审核或测试后，只需要添加评论和投票，即可完成回复CR。评论“我在系统X上尝试过这个CR，是正确的”或者“我在系统X上运行这个CR发现了一些错误”将帮助维护者进行评估。因此，维护人员也能够更快地处理CR，并且每个人都能从中获益。</p>
+<p>浏览 <a href="https://gerrit.hyperledger.org/r/#/q/status:open" target="_blank" rel="noopener">Gerrit上开放的CRs</a>开始你的贡献。</p>
+<h3 id="设置开发环境"><a href="#设置开发环境" class="headerlink" title="设置开发环境"></a>设置开发环境</h3><p>接下来，在本地开发环境中构建项目，以确保所有配置都是正确的。</p>
+<h3 id="什么是更好的变更请求"><a href="#什么是更好的变更请求" class="headerlink" title="什么是更好的变更请求?"></a>什么是更好的变更请求?</h3><ul>
+<li><p>一次只包含一个变更。不是五个，3个，或者10个。仅仅一个变更。为什么呢？因为它变更的影响范围。如果我们有一轮回归，那么将更容易证明一次影响较广的组合提交将是一个罪魁祸首。</p>
+</li>
+<li><p>在JIRA的故事中包含一个链接。为什么？因为 a) 我们希望追踪你的速度以便更好地判断我们可以传递什么信息。b) 因为我们可以证明这次变更是有效的。在很多情况下，会有很多讨论围绕提交的变更，我们希望将它链接到它的本身。</p>
+</li>
+</ul>
+<ul>
+<li><p>每次变更都包含单元或者集成测试（或者对已有测试的修改）。这不仅仅意味着正确的测试。同样包括一些异常测试来捕获错误。在你写代码的时候，你有责任去测试它并且证明你的变更是正确的。为什么呢？因为没有这些，我们无法知道你的代码是否真的正确地工作。</p>
+</li>
+<li><p>单元测试需要没有额外的依赖。你应该使用 <code>go test</code> 或者等价的语言的测试方式来运行单元测试。任何需要额外依赖的测试（例如需要用脚本来运行另一个组件）需要适当的mocking。任何除了单元测试以外的测试根据定义都是集成测试。为什么？因为很多开源软件开发者都实用测试驱动的开发方式。他们关注一个目录下的测试用例，一旦代码变更了他们采用测试去判断他们的代码是否正确。这是非常高效的，相比当代码变更后运行整个项目来说。请参考<a href="http://artofunittesting.com/definition-of-a-unit-test/" target="_blank" rel="noopener">单元测试的定义</a>在脑海中建立单元测试的标准，以此来写出高效的单元测试。</p>
+</li>
+<li><p>每个CR的最小代码行数。为什么？因为维护者每天同样也有工作。如果你发送1000或者2000行的代码，你认为维护者需要多久才能审查完你的代码？保证你的变更在200-300行左右，尽可能地。如果你有一个比较大的变更，可以将它分解为比较小的几个无关的变更。如果要添加一组新功能来满足一个需求，请在测试中分别添加它们，然后编写满足需求的代码。当然，总会有以外。如果你增加一些小变动然后添加了300行测试，你将会被宽恕;-)如果你需要做一个变更，而且影响比较广或者生成了很多代码（protobufs等）。同样也是个例外。</p>
+</li>
+</ul>
+<blockquote>
+<p>大的变更，例如那些大于300行的CR将更有可能收到-2，并且你可能被要求重构以符合本指南。</p>
+</blockquote>
+<ul>
+<li><p>不要堆叠你的变更请求（例如在先前的变更请求的本地分支提交你的变更）除非它们是相关联的。这将最大幅度减少合并冲突，并且更快地合并。如果你堆叠你的变更请求，由于前面的请求中的审核注释，你后续的请求将被搁置。</p>
+</li>
+<li><p>写一个有意义的提交信息。包括55个或者更少字符的标题，后面跟一行空行，然后跟上更全面的关于变更的描述。每个变更必须包括对应的变更的JIRA标识号(例如[FAB-1234])。这个可以在标题中，但是同样需要包括在消息正文中。</p>
+</li>
+</ul>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Gerrit会自动创建超级链接到JIRA的条目。例如</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    [FAB-1234] fix foobar() panic</span><br><span class="line"></span><br><span class="line">    Fix [FAB-1234] added a<span class="built_in"> check </span>to ensure that when foobar(foo string)</span><br><span class="line">    is called, that there is a non-empty string argument.</span><br></pre></td></tr></table></figure>
+<p>最后，要有回应。不要让一个变更请求因为应为评审意见而不了了之，这样会导致它需要进行rebase。这只会进一步延迟合并，给你带来更多的工作-以修复合并冲突。</p>
+<h2 id="法律材料"><a href="#法律材料" class="headerlink" title="法律材料"></a>法律材料</h2><p><strong>注意:</strong> 每一个源文件必须包括Apache Software License 2.0。可以参考 <a href="https://github.com/hyperledger/fabric/blob/master/docs/source/dev-setup/headers.txt" target="_blank" rel="noopener">license header</a>。</p>
+<p>我们尽可能努力让贡献边等简单。这个协议为我们提供了贡献相关的法律相关的知识。我们使用和Linux® Kernel<a href="https://elinux.org/Developer_Certificate_Of_Origin" target="_blank" rel="noopener">社区</a>一样的管理贡献的方法<a href="https://github.com/hyperledger/fabric/blob/master/docs/source/DCO1.1.txt" target="_blank" rel="noopener">Developer’s Certificate of Origin 1.1 (DCO)</a>来管理Hyperledger Fabric。</p>
+<p>我们只要求在提交要审查的补丁时，开发者在commit消息中带上他们的sign-off签名即可。</p>
+<p>这里是一个Signed-off-by line的签名例子，指示了提交者接受DCO约定：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Signed-off-by</span>: <span class="selector-tag">John</span> <span class="selector-tag">Doe</span> &lt;<span class="selector-tag">john</span><span class="selector-class">.doe</span>@<span class="keyword">example</span>.<span class="keyword">com</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>你可以使用 <code>git commit -s</code> 在提交的时候来自动带上你的签名。</p>
+<h2 id="相关的主题"><a href="#相关的主题" class="headerlink" title="相关的主题"></a>相关的主题</h2><ul>
+<li>维护者</li>
+<li>使用Jira来了解当前的工作流项</li>
+<li>设置开发环境</li>
+<li>构建Hyperledger Fabric</li>
+<li>配置</li>
+<li>申请一个Linux Foundation账号</li>
+<li>使用Gerrit进行工作</li>
+<li>使用Gerrit进行审核</li>
+<li>查看待定的更改</li>
+<li>提交一个变更到Gerrit</li>
+<li>审查变更</li>
+<li>Gerrit 最佳实践</li>
+<li>编程指南</li>
+<li>生成 gRPC 代码</li>
+<li>添加或者更新Go第三方包</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>如果需要查看上述相关的文档，我也已经为大家做了翻译，需要详细查看每个细节的朋友可以查看<a href="https://fabric-docs-cn-topjohn.readthedocs.io/zh_CN/latest/CONTRIBUTING.html" target="_blank" rel="noopener">中文文档</a>，或者点击我<a href="https://www.xuanzhangjiong.top" target="_blank" rel="noopener">博客</a>右侧的<code>ARCHIEVEMENT</code>之<code>Fabric官方文档中文版</code>。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/13/169771d608336bd7?w=1080&amp;h=1120&amp;f=jpeg&amp;s=80910" alt="AwesomeBlockchain"></p>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fabric/">Fabric</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fabric-笔记/">Fabric 笔记</a><span class="tag-list-count">2</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Fabric/">Fabric</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Fabric/Fabric-笔记/">Fabric 笔记</a><span class="category-list-count">2</span></li></ul></li></ul></div></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2020/01/08/超级账本解读大纲/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2019/02/28/Fabric架构演变之路/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/TopJohn" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="http://weibo.com/xuanzhangjiong" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.zhihu.com/people/topjohn" title="zhihu" target="_blank"><i class="icon icon-zhihu"></i></a></li><li><a href="mailto:xzj19922010@gmail.com" target="_blank"><i class="icon icon-email"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2019 超级账本解读</p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>
